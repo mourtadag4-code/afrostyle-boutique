@@ -1,0 +1,18 @@
+# Fichiers d'environnement (mots de passe, config sensible)
+.env
+config.php
+
+# Dossier des uploads (contient des images générées, pas du code)
+uploads/
+
+# Fichiers de cache/logs
+*.log
+*.tmp
+
+# IDE / Éditeurs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
