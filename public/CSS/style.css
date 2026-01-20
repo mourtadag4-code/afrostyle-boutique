@@ -1,0 +1,121 @@
+/* =====================================================
+   1. VARIABLES (COULEURS GÉNÉRALES)
+===================================================== */
+:root {
+    --afro-gold: #D4AF37;
+    --afro-gold-dark: #B8860B;
+    --afro-black: #0c0b0b;
+    --afro-light: #F8F9FA;
+    --afro-creme: #f8f4eb;
+    --text-main: #333333;
+    --card-bg: #ffffff;
+}
+
+/* VARIABLES QUAND LE MODE SOMBRE EST ACTIF */
+[data-theme="dark"] {
+    --afro-light: #121212 !important;
+    --afro-creme: #1e1e1e !important;
+    --text-main: #f8f9fa !important;
+    --card-bg: #1e1e1e !important;
+    --afro-black: #ffffff !important;
+}
+
+/* =====================================================
+   2. STYLES DE BASE (FORÇAGE)
+===================================================== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--afro-light) !important;
+    color: var(--text-main) !important;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Forcer toutes les sections à suivre le thème */
+[data-theme="dark"] body, 
+[data-theme="dark"] section, 
+[data-theme="dark"] .section-afro,
+[data-theme="dark"] .bg-light,
+[data-theme="dark"] .bg-white {
+    background-color: var(--afro-light) !important;
+    color: var(--text-main) !important;
+}
+
+/* =====================================================
+   3. BANNIÈRES & HÉROS
+===================================================== */
+.hero-header-catalogue {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                url('../Images/banniere.png') center/cover;
+    color: white;
+    padding: 80px 0;
+}
+
+/* =====================================================
+   4. CARTES & CONTENUS (DARK MODE COMPATIBLE)
+===================================================== */
+.product-card-afro, .product-card, .sidebar-catalogue {
+    background-color: var(--card-bg) !important;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border-bottom: 4px solid var(--afro-gold) !important;
+    color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .product-card-afro, 
+[data-theme="dark"] .product-card {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+}
+
+.product-image-wrapper {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--afro-creme) !important;
+}
+
+/* =====================================================
+   5. RECHERCHE
+===================================================== */
+.search-hero-box, .search-bar-rounded {
+    background: var(--card-bg) !important;
+    border-radius: 50px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.search-hero-box input {
+    background: transparent !important;
+    color: var(--text-main) !important;
+    border: none;
+}
+
+/* =====================================================
+   6. BOUTONS & ÉLÉMENTS DORÉS
+===================================================== */
+.btn-warning, .btn-primary-afro {
+    background-color: var(--afro-gold) !important;
+    border: none !important;
+    color: black !important;
+    font-weight: bold !important;
+    border-radius: 50px !important;
+}
+
+.text-warning, .text-gold { color: var(--afro-gold) !important; }
+
+[data-theme="dark"] .text-muted {
+    color: #aaaaaa !important;
+}
+
+/* =====================================================
+   7. TITRES (FORÇAGE BLANC EN DARK MODE)
+===================================================== */
+[data-theme="dark"] h1, 
+[data-theme="dark"] h2, 
+[data-theme="dark"] h3, 
+[data-theme="dark"] h4, 
+[data-theme="dark"] h5,
+[data-theme="dark"] .nav-link {
+    color: #ffffff !important;
+}

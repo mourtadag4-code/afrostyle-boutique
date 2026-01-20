@@ -1,0 +1,296 @@
+/* --- VARIABLES DE COULEURS --- */
+:root {
+    --admin-dark: #2c3e50;
+    --afro-gold: #D4AF37;
+    --afro-red: #ff4b2b;
+    --bg-light: #f4f7f6; /* Gris très léger pour le fond */
+    --table-stripe: #f8fafb; /* Gris-bleu pour alterner les lignes */
+}
+
+/* --- STYLE GÉNÉRAL --- */
+body { 
+    background-color: var(--bg-light); 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    color: #333;
+}
+
+/* --- BARRE LATÉRALE (SIDEBAR) --- */
+.sidebar { 
+    height: 100vh; 
+    width: 250px; 
+    position: fixed; 
+    background: var(--admin-dark); 
+    color: white; 
+    z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+}
+
+.sidebar a { 
+    color: #bdc3c7; 
+    display: block; 
+    padding: 15px 20px; 
+    text-decoration: none; 
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.sidebar a:hover, .sidebar a.active { 
+    background: #1a252f; 
+    color: white; 
+    border-left: 4px solid var(--afro-gold); 
+}
+
+/* --- CONTENU PRINCIPAL --- */
+.main-content { 
+    margin-left: 250px; 
+    padding: 40px; 
+    min-height: 100vh;
+}
+
+/* --- TITRE DE PAGE STYLE BANNIÈRE CENTRÉE --- */
+.main-content h2 {
+    text-transform: uppercase !important;
+    letter-spacing: 4px !important;
+    color: white !important;
+    
+    background: linear-gradient(135deg, var(--admin-dark) 0%, #1a252f 100%); 
+    padding: 35px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    
+    display: block !important; 
+    width: 100% !important;     /* Force la largeur pour le centrage */
+    text-align: center !important; 
+    margin-bottom: 50px !important;
+    
+    border-bottom: 6px solid var(--afro-gold);
+}
+
+/* --- REMÈDE AU "TROP BLANC" (TABLEAUX ET CARTES) --- */
+
+/* Conteneur des tableaux */
+.admin-table-card {
+    background-color: white;
+    border-radius: 15px !important;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* En-tête des tableaux */
+.table-dark {
+    background-color: var(--admin-dark) !important;
+}
+
+.table-dark th {
+    color: var(--afro-gold) !important; /* Texte doré sur fond sombre */
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 20px 15px !important;
+    border: none;
+}
+
+/* Alternance des lignes pour casser le blanc */
+.table tbody tr:nth-child(even) {
+    background-color: var(--table-stripe) !important;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(212, 175, 55, 0.05) !important; /* Survol doré discret */
+}
+
+.table td {
+    padding: 15px !important;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+/* --- CARTES DE STATISTIQUES --- */
+.stat-card { 
+    border: none !important; 
+    border-radius: 20px !important; 
+    background: white;
+    padding: 25px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; 
+    border-top: 5px solid var(--afro-gold) !important; 
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Chiffres dans les cartes (on annule le style bannière) */
+.stat-card h2 {
+    background: none !important;
+    color: var(--admin-dark) !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    text-align: left !important;
+    margin-top: 10px !important;
+    width: auto !important;
+    letter-spacing: normal !important;
+}
+
+/* --- BOUTON DE DÉCONNEXION --- */
+.text-danger {
+    color: var(--afro-red) !important;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.text-danger:hover {
+    background: rgba(255, 75, 43, 0.1) !important;
+}/* --- VARIABLES DE COULEURS --- */
+:root {
+    /* Couleurs fixes AfroStyle */
+    --admin-dark: #2c3e50;
+    --afro-gold: #D4AF37;
+    --afro-red: #ff4b2b;
+    
+    /* Couleurs Dynamiques (Mode Clair par défaut) */
+    --bg-light: #f4f7f6;      /* Fond de la page */
+    --bg-card: #ffffff;       /* Fond des cartes et tableaux */
+    --text-main: #333333;     /* Couleur du texte */
+    --table-stripe: #f8fafb;  /* Lignes alternées */
+    --border-color: #eeeeee;  /* Bordures */
+}
+
+/* --- VARIABLES MODE SOMBRE --- */
+[data-theme="dark"] {
+    --bg-light: #121212;      /* Fond très sombre */
+    --bg-card: #1e1e1e;       /* Cartes gris foncé */
+    --text-main: #e0e0e0;     /* Texte gris clair */
+    --table-stripe: #252525;  /* Lignes alternées sombres */
+    --border-color: #333333;  /* Bordures sombres */
+    --admin-dark: #000000;    /* Sidebar encore plus sombre */
+}
+
+/* --- STYLE GÉNÉRAL --- */
+body { 
+    background-color: var(--bg-light) !important; 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    color: var(--text-main) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- BARRE LATÉRALE (SIDEBAR) --- */
+.sidebar { 
+    height: 100vh; 
+    width: 250px; 
+    position: fixed; 
+    background: var(--admin-dark); 
+    color: white; 
+    z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+    transition: background 0.3s ease;
+}
+
+.sidebar a { 
+    color: #bdc3c7; 
+    display: block; 
+    padding: 15px 20px; 
+    text-decoration: none; 
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.sidebar a:hover, .sidebar a.active { 
+    background: #1a252f; 
+    color: white; 
+    border-left: 4px solid var(--afro-gold); 
+}
+
+/* --- CONTENU PRINCIPAL --- */
+.main-content { 
+    margin-left: 250px; 
+    padding: 40px; 
+    min-height: 100vh;
+    background-color: var(--bg-light);
+    transition: background-color 0.3s ease;
+}
+
+/* --- TITRE DE PAGE STYLE BANNIÈRE --- */
+.main-content h2 {
+    text-transform: uppercase !important;
+    letter-spacing: 4px !important;
+    color: white !important;
+    background: linear-gradient(135deg, var(--admin-dark) 0%, #1a252f 100%); 
+    padding: 35px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    display: block !important; 
+    width: 100% !important; 
+    text-align: center !important; 
+    margin-bottom: 50px !important;
+    border-bottom: 6px solid var(--afro-gold);
+}
+
+/* --- CARTES ET TABLEAUX --- */
+.admin-table-card, .card {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    border-radius: 15px !important;
+    border: 1px solid var(--border-color) !important;
+    transition: background-color 0.3s ease;
+}
+
+/* Style spécifique pour les inputs en mode sombre */
+[data-theme="dark"] .form-control, 
+[data-theme="dark"] .form-select {
+    background-color: #2b2b2b !important;
+    border-color: #444 !important;
+    color: #fff !important;
+}
+
+/* --- TABLEAUX --- */
+.table {
+    color: var(--text-main) !important;
+}
+
+.table-dark th {
+    background-color: #1a252f !important;
+    color: var(--afro-gold) !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    padding: 20px 15px !important;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: var(--table-stripe) !important;
+}
+
+.table td {
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* --- CARTES DE STATISTIQUES --- */
+.stat-card { 
+    border-top: 5px solid var(--afro-gold) !important; 
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+}
+
+.stat-card h2 {
+    background: none !important;
+    color: var(--text-main) !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    text-align: left !important;
+    margin-top: 10px !important;
+    width: auto !important;
+    letter-spacing: normal !important;
+}
+
+/* --- BOUTONS --- */
+.text-danger {
+    color: var(--afro-red) !important;
+}
