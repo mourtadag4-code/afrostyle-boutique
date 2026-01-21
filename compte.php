@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once "commun/connexiondb.php";
 if (!isset($pdo) && isset($conn)) { $pdo = $conn; } // Au cas où ta variable s'appelle $conn
 
-require_once "commun/header.php";
+include_once "commun/header.php";
 
 // 2. Vérification de la session
 if (!isset($_SESSION['utilisateur_id'])) {
@@ -140,6 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     </div>
 </main>
 
-<?php require_once "commun/footer.php"; ?>
+<?php include_once "commun/footer.php"; ?>
 </body>
 </html>

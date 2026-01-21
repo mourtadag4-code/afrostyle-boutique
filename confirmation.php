@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = "Paiement AfroStyle";
-require_once 'commun/header.php';
+include_once 'commun/header.php';
 ?>
 
 <div class="container py-5 text-center">
@@ -74,4 +74,4 @@ require_once 'commun/header.php';
         </form>
     </div>
 </div>
-<?php require_once 'commun/footer.php'; ?>
+<?php include_once 'commun/footer.php'; ?>

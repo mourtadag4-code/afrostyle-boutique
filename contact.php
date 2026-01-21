@@ -1,7 +1,7 @@
 <?php
 session_start();
 $page_title = "Contact - AfroStyle";
-require_once "commun/header.php";
+include_once "commun/header.php";
 
 // --- LOGIQUE D'ENVOI RÉEL ---
 $success_msg = "";
@@ -163,4 +163,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<?php require_once "commun/footer.php"; ?>
+<?php include_once "commun/footer.php"; ?>

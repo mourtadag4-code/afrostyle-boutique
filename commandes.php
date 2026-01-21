@@ -57,7 +57,7 @@ if (!empty($_SESSION['panier'])) {
 
 // 3. AFFICHAGE DE L'HISTORIQUE (Si on accède à la page normalement)
 $page_title = "Mes Commandes - AfroStyle";
-require_once 'commun/header.php';
+include_once 'commun/header.php';
 
 $sql = "SELECT * FROM commande WHERE id_utilisateur = ? ORDER BY date_commande DESC";
 $stmt = $pdo->prepare($sql);
@@ -103,4 +103,4 @@ $mes_commandes = $stmt->fetchAll();
     <?php endif; ?>
 </div>
 
-<?php require_once 'commun/footer.php'; ?>
+<?php include_once 'commun/footer.php'; ?>

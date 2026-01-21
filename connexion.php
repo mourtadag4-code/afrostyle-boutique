@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['utilisateur_role'] = $utilisateur['role'];
 
             // --- 2. RÉCUPÉRATION DU PANIER DEPUIS LA BDD ---
-            $_SESSION['panier'] = []; // On initialise
+            $_SESSION['panier'] = []; 
             $stmtPanier = $pdo->prepare("SELECT p.id_produit, p.nom_produit, p.prix_unitaire, p.image_produit, pan.quantite 
                                          FROM panier pan 
                                          JOIN produit p ON pan.id_produit = p.id_produit 
@@ -43,14 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // --- 3. RÉCUPÉRATION DES FAVORIS DEPUIS LA BDD ---
-            $_SESSION['favoris'] = []; // On initialise
+            $_SESSION['favoris'] = []; 
             $stmtFav = $pdo->prepare("SELECT id_produit FROM favoris WHERE id_utilisateur = ?");
             $stmtFav->execute([$id_user]);
             while ($row = $stmtFav->fetch(PDO::FETCH_ASSOC)) {
                 $_SESSION['favoris'][$row['id_produit']] = true;
             }
 
-            // --- 4. REDIRECTION INTELLIGENTE ---
+            // --- 4. REDIRECTION ---
             if (isset($_GET['redirect'])) {
                 $url = $_GET['redirect'];
             } elseif (isset($_SESSION['redirect_to'])) {
@@ -88,10 +88,15 @@ require_once 'commun/header.php';
                             <label class="form-label small fw-bold">Email</label>
                             <input type="email" class="form-control rounded-pill" name="email" required>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="form-label small fw-bold">Mot de passe</label>
                             <input type="password" class="form-control rounded-pill" name="mot_de_passe" required>
                         </div>
+                        
+                        <div class="text-end mb-4">
+                            <a href="mdp_oublie.php" class="text-muted small text-decoration-none italic">Mot de passe oublié ?</a>
+                        </div>
+
                         <button type="submit" class="btn btn-warning w-100 rounded-pill py-2 fw-bold mb-3 shadow-sm">
                             SE CONNECTER
                         </button>

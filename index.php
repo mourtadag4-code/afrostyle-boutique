@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // 2. INCLUSION DU HEADER
-require_once 'commun/header.php';
+include_once 'commun/header.php';
 
 // 3. VARIABLES DE PERSONNALISATION
 $message_principal = '';
@@ -141,4 +141,4 @@ if(isset($_SESSION['utilisateur_id'])) {
     </div>
 </section>
 
-<?php require_once 'commun/footer.php'; ?>
+<?php include_once 'commun/footer.php'; ?>

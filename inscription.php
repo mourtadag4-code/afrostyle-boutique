@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = "Créer un compte - AFROSTYLE";
-require_once 'commun/header.php';
+include_once 'commun/header.php';
 ?>
 
 <main class="bg-light py-5" style="min-height: 80vh;">
@@ -132,4 +132,4 @@ require_once 'commun/header.php';
     </div>
 </main>
 
-<?php require_once 'commun/footer.php'; ?>
+<?php include_once 'commun/footer.php'; ?>

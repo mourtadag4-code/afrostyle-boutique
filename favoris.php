@@ -19,7 +19,7 @@ if (isset($_GET['remove'])) {
 }
 
 $page_title = "Mes Favoris - AFROSTYLE";
-require_once "commun/header.php";
+include_once "commun/header.php";
 ?>
 
 <style>
@@ -115,4 +115,4 @@ require_once "commun/header.php";
     <?php endif; ?>
 </div>
 
-<?php require_once "commun/footer.php"; ?>
+<?php include_once "commun/footer.php"; ?>

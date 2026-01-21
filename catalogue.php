@@ -31,7 +31,7 @@ $stmt->execute([$today]);
 $produits = $stmt->fetchAll();
 
 $page_title = "Catalogue - AfroStyle";
-require_once "commun/header.php";
+include_once "commun/header.php";
 ?>
 
 <style>
@@ -174,4 +174,4 @@ require_once "commun/header.php";
     </div>
 </div>
 
-<?php require_once "commun/footer.php"; ?>
+<?php include_once "commun/footer.php"; ?>

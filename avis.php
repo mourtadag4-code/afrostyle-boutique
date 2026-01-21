@@ -39,7 +39,7 @@ $tous_les_avis = $pdo->query("SELECT a.*, p.nom_produit, u.prenom, u.nom FROM av
                                ORDER BY a.date_avis DESC LIMIT 10")->fetchAll();
 
 $page_title = "Avis Clients - AFROSTYLE";
-require_once 'commun/header.php';
+include_once 'commun/header.php';
 ?>
 
 <style>
@@ -124,4 +124,4 @@ require_once 'commun/header.php';
     </div>
 </div>
 
-<?php require_once 'commun/footer.php'; ?>
+<?php include_once 'commun/footer.php'; ?>
