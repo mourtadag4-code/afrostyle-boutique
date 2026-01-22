@@ -17,7 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Gestion de l'upload d'image
     $chemin_db = "";
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $nom_image = time() . '_' . $_FILES['image']['name'];
+        
+        // --- MODIFICATION ICI ---
+        // On récupère le nom original sans ajouter de chiffres devant
+        // str_replace remplace les espaces par des underscores pour éviter les bugs d'affichage
+        $nom_image = str_replace(' ', '_', $_FILES['image']['name']);
+        
         $destination = '../public/Images/' . $nom_image;
         
         if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
@@ -102,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label class="input-group-text bg-dark text-white" for="inputGroupFile01"><i class="bi bi-upload"></i></label>
                             <input type="file" name="image" class="form-control" id="inputGroupFile01" accept="image/*" required>
                         </div>
-                        <small class="text-muted">Format recommandé : JPG ou PNG (carré idéalement).</small>
+                        <small class="text-muted">L'image gardera son nom d'origine sans chiffres ajoutés.</small>
                     </div>
 
                     <div class="d-flex justify-content-between pt-4 border-top">

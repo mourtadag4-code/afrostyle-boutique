@@ -2,13 +2,22 @@
 require_once 'auth_check.php';
 require_once '../commun/connexiondb.php';
 
-// On compte les données pour l'analyse
-$nb_produits = $pdo->query("SELECT COUNT(*) FROM produit")->fetchColumn();
-$nb_clients = $pdo->query("SELECT COUNT(*) FROM utilisateurs WHERE role = 'client'")->fetchColumn();
-$nb_promos = $pdo->query("SELECT COUNT(*) FROM produit WHERE prix_promo > 0")->fetchColumn();
+// --- 1. CONFIGURATION DES DATES ---
+$today = date('Y-m-d');
 
-// --- NOUVEAU : RÉCUPÉRATION DES REVENUS POUR LE GRAPHIQUE ---
-// On récupère les ventes des 6 derniers mois
+// --- 2. COMPTAGE DES DONNÉES ---
+// Compte tous les produits
+$nb_produits = $pdo->query("SELECT COUNT(*) FROM produit")->fetchColumn();
+
+// Compte tous les clients
+$nb_clients = $pdo->query("SELECT COUNT(*) FROM utilisateurs WHERE role = 'client'")->fetchColumn();
+
+// --- 3. COMPTER TOUTES LES PROMOTIONS (SYNCHRONISÉ) ---
+// On retire le filtre de date pour que le chiffre corresponde exactement 
+// au nombre de lignes que vous voyez dans votre page promotions.php
+$nb_promos = $pdo->query("SELECT COUNT(*) FROM promotion")->fetchColumn();
+
+// --- 4. RÉCUPÉRATION DES REVENUS POUR LE GRAPHIQUE ---
 $sql_stats = "SELECT 
                 DATE_FORMAT(date_commande, '%b') as mois, 
                 SUM(montant_total) as total 
@@ -24,7 +33,6 @@ while($row = $stats_query->fetch()) {
     $labels_mois[] = $row['mois'];
     $donnees_revenus[] = $row['total'];
 }
-// --------------------------------------------------------
 ?>
 <!DOCTYPE html>
 <html lang="fr" id="html-tag">
@@ -60,9 +68,9 @@ while($row = $stats_query->fetch()) {
         <div class="dropdown">
             <button class="btn bg-white rounded-pill shadow-sm d-flex align-items-center border dropdown-toggle" type="button" data-bs-toggle="dropdown">
                 <div class="avatar bg-dark text-warning rounded-circle d-flex align-items-center justify-content-center me-2" style="width:30px; height:30px; font-weight:bold;">
-                    <?= strtoupper(substr($_SESSION['user_nom'], 0, 1)) ?>
+                    <?= strtoupper(substr($_SESSION['user_nom'] ?? 'A', 0, 1)) ?>
                 </div>
-                <span class="fw-bold text-dark me-1"><?= htmlspecialchars($_SESSION['user_nom']) ?></span>
+                <span class="fw-bold text-dark me-1"><?= htmlspecialchars($_SESSION['user_nom'] ?? 'Admin') ?></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                 <li class="px-3 py-1 small text-muted">ADMINISTRATEUR</li>
@@ -89,7 +97,7 @@ while($row = $stats_query->fetch()) {
         </div>
         <div class="col-md-4">
             <div class="card p-4 border-0 shadow-sm rounded-4">
-                <h6 class="text-muted small uppercase fw-bold">En Promotion</h6>
+                <h6 class="text-muted small uppercase fw-bold">Promotions Enregistrées</h6>
                 <div class="d-flex justify-content-between align-items-center">
                     <h2 class="fw-bold m-0"><?= $nb_promos ?></h2>
                     <i class="bi bi-megaphone fs-1 text-danger opacity-25"></i>
@@ -115,7 +123,7 @@ while($row = $stats_query->fetch()) {
     </div>
 
     <div class="bg-white p-4 rounded-4 shadow-sm text-center border-top border-4 border-warning">
-        <h4 class="fw-bold">Ravi de vous revoir, <?= htmlspecialchars($_SESSION['user_nom']) ?> !</h4>
+        <h4 class="fw-bold">Ravi de vous revoir, <?= htmlspecialchars($_SESSION['user_nom'] ?? 'Admin') ?> !</h4>
         <p class="text-muted">Gérez votre boutique AfroStyle en toute simplicité.</p>
         <div class="d-flex justify-content-center gap-3 mt-3">
             <a href="produits.php" class="btn btn-dark px-4 rounded-pill">Gérer Produits</a>
@@ -128,10 +136,9 @@ while($row = $stats_query->fetch()) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // --- INITIALISATION DU GRAPHIQUE ---
     const ctx = document.getElementById('revenueChart').getContext('2d');
-    const labels = <?php echo json_encode($labels_mois); ?>;
-    const dataVentes = <?php echo json_encode($donnees_revenus); ?>;
+    const labels = <?= json_encode($labels_mois); ?>;
+    const dataVentes = <?= json_encode($donnees_revenus); ?>;
 
     const myChart = new Chart(ctx, {
         type: 'line',
@@ -140,7 +147,7 @@ while($row = $stats_query->fetch()) {
             datasets: [{
                 label: 'Revenus Mensuels',
                 data: dataVentes.length ? dataVentes : [0],
-                borderColor: '#D4AF37', // Couleur Or AfroStyle
+                borderColor: '#D4AF37',
                 backgroundColor: 'rgba(212, 175, 55, 0.1)',
                 borderWidth: 3,
                 fill: true,
@@ -150,13 +157,11 @@ while($row = $stats_query->fetch()) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true }
-            }
+            scales: { y: { beginAtZero: true } }
         }
     });
 
-    // --- GESTION DU MODE SOMBRE ---
+    // Gestion du thème Dark/Light
     const toggleBtn = document.getElementById('theme-toggle');
     const htmlTag = document.getElementById('html-tag');
     const themeIcon = document.getElementById('theme-icon');
@@ -171,7 +176,6 @@ while($row = $stats_query->fetch()) {
         }
     }
 
-    // Au chargement
     applyTheme(localStorage.getItem('theme'));
 
     toggleBtn.addEventListener('click', () => {

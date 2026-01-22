@@ -10,7 +10,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = (int)$_GET['id'];
 
-// On récupère les infos actuelles du produit (y compris prix_promo)
+// On récupère les infos actuelles du produit
 $stmt = $pdo->prepare("SELECT * FROM produit WHERE id_produit = ?");
 $stmt->execute([$id]);
 $produit = $stmt->fetch();
@@ -27,29 +27,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = $_POST['nom'];
     $id_cat = $_POST['categorie'];
     $prix = $_POST['prix'];
-    
-    // AJOUT : Gestion du prix promo (si vide, on enregistre NULL)
     $prix_promo = !empty($_POST['prix_promo']) ? $_POST['prix_promo'] : NULL;
-    
     $stock = $_POST['stock'];
     $desc = $_POST['description'];
+    
+    // Par défaut, on garde l'image actuelle
     $image_finale = $produit['image_produit'];
 
     // Si on change l'image
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $nom_image = time() . '_' . $_FILES['image']['name'];
+        
+        // --- MODIFICATION : Suppression de time() et nettoyage des espaces ---
+        $nom_image = str_replace(' ', '_', $_FILES['image']['name']);
         $destination = '../public/Images/' . $nom_image;
         
         if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
-            // Supprimer l'ancienne image du serveur pour ne pas encombrer
-            if (!empty($produit['image_produit']) && file_exists("../" . $produit['image_produit'])) {
-                unlink("../" . $produit['image_produit']);
+            
+            // --- NETTOYAGE : Supprimer l'ancienne image seulement si le nom change ---
+            if (!empty($produit['image_produit'])) {
+                $ancien_chemin = "../" . $produit['image_produit'];
+                // On vérifie si le fichier existe et si on n'est pas en train d'écraser le même nom
+                if (file_exists($ancien_chemin) && $produit['image_produit'] != 'public/Images/' . $nom_image) {
+                    unlink($ancien_chemin);
+                }
             }
             $image_finale = 'public/Images/' . $nom_image;
         }
     }
 
-    // MISE À JOUR SQL : On ajoute prix_promo ici
+    // MISE À JOUR SQL
     $sql = "UPDATE produit SET 
             nom_produit = ?, id_categorie = ?, prix_unitaire = ?, 
             prix_promo = ?, quantite_stock = ?, description_produit = ?, image_produit = ? 
@@ -113,9 +119,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold d-block">Visuel actuel</label>
-                        <img src="../<?= $produit['image_produit'] ?>" width="120" class="rounded border p-1 mb-2 bg-light shadow-sm">
+                        <?php if (!empty($produit['image_produit'])): ?>
+                            <img src="../<?= $produit['image_produit'] ?>" width="120" class="rounded border p-1 mb-2 bg-light shadow-sm">
+                        <?php endif; ?>
                         <input type="file" name="image" class="form-control" accept="image/*">
-                        <small class="text-muted italic">Laissez vide si vous ne souhaitez pas changer la photo.</small>
+                        <small class="text-muted italic">Le nom sera nettoyé (ex: Mon Image.png -> Mon_Image.png).</small>
                     </div>
                     <div class="d-flex justify-content-between pt-3 border-top">
                         <a href="produits.php" class="btn btn-light">Retour</a>
