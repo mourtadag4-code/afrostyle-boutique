@@ -2,14 +2,27 @@
 session_start();
 require_once 'commun/connexiondb.php';
 
+// --- CONFIGURATION PAGINATION ---
+$parPage = 6; 
+$pageCourante = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($pageCourante < 1) $pageCourante = 1;
+$offset = ($pageCourante - 1) * $parPage;
+
 // --- FILTRES ET TRI ---
 $cat_id = isset($_GET['categorie']) ? (int)$_GET['categorie'] : 0;
 $recherche = $_GET['q'] ?? '';
 $tri = $_GET['tri'] ?? 'new'; 
 $today = date('Y-m-d');
 
-// 1. Construction de la requête SQL avec jointure Promotion
-$sql = "SELECT p.*, prom.pourcentage_reduction 
+// 1. COMPTAGE TOTAL (Pagination)
+$countSql = "SELECT COUNT(*) FROM produit WHERE 1=1";
+if ($cat_id > 0) $countSql .= " AND id_categorie = $cat_id";
+if ($recherche) $countSql .= " AND nom_produit LIKE " . $pdo->quote('%'.$recherche.'%');
+$totalProduits = $pdo->query($countSql)->fetchColumn();
+$totalPages = ceil($totalProduits / $parPage);
+
+// 2. REQUÊTE PRINCIPALE (Jointure Promotion, Favoris, etc.)
+$sql = "SELECT p.*, prom.pourcentage_reduction, prom.date_fin 
         FROM produit p 
         LEFT JOIN promotion prom ON p.id_produit = prom.id_produit 
         AND ? BETWEEN prom.date_debut AND prom.date_fin 
@@ -18,157 +31,139 @@ $sql = "SELECT p.*, prom.pourcentage_reduction
 if ($cat_id > 0) $sql .= " AND p.id_categorie = $cat_id";
 if ($recherche) $sql .= " AND p.nom_produit LIKE " . $pdo->quote('%'.$recherche.'%');
 
-// Logique de tri
+// Tri
 switch ($tri) {
     case 'prix_asc': $sql .= " ORDER BY p.prix_unitaire ASC"; break;
     case 'prix_desc': $sql .= " ORDER BY p.prix_unitaire DESC"; break;
-    case 'new': 
     default: $sql .= " ORDER BY p.id_produit DESC"; break;
 }
 
+$sql .= " LIMIT $parPage OFFSET $offset";
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$today]);
-$produits = $stmt->fetchAll();
+$produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$page_title = "Catalogue - AfroStyle";
+$page_title = "Collection AfroStyle";
 include_once "commun/header.php";
 ?>
 
 <style>
     :root { --or-afro: #D4AF37; --or-fonce: #B8860B; --promo-rouge: #e63946; }
+    .product-card { border: none; border-radius: 15px; background: #fff; transition: 0.3s; height: 100%; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .product-card:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(0,0,0,0.1) !important; }
+    .img-box { height: 250px; background: #fdfaf3; display: flex; align-items: center; justify-content: center; position: relative; padding: 10px; }
+    .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
     
-    .page-header { 
-        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('public/Images/banner.jpg') center/cover; 
-        color: white; padding: 60px 0; margin-bottom: 40px;
-    }
+    /* Coeur Favoris */
+    .btn-fav { position: absolute; top: 15px; right: 15px; background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: 0.3s; text-decoration: none; z-index: 10; }
+    .btn-fav:hover, .btn-fav.active { color: var(--promo-rouge); background: #fff1f2; }
 
-    .sidebar-filter { border: none; border-radius: 15px; background: #fff; }
-    .cat-link { 
-        display: block; padding: 12px 15px; color: #333; text-decoration: none; 
-        font-weight: 600; border-bottom: 1px solid #f8f4eb; transition: 0.3s;
-    }
-    .cat-link:hover, .cat-link.active { color: var(--or-afro); background: #fdfaf3; padding-left: 25px; }
+    /* Badge Promo */
+    .promo-badge { position: absolute; top: 15px; left: 15px; background: var(--promo-rouge); color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; z-index: 10; }
 
-    .product-card { 
-        border: none; border-radius: 15px; background: #fff; transition: 0.3s; 
-        position: relative; overflow: hidden; height: 100%; display: flex; flex-direction: column;
-    }
-    .product-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
-    
-    .img-box { height: 230px; background: #fdfaf3; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-    .img-box img { max-height: 85%; max-width: 90%; transition: 0.4s; object-fit: contain; }
+    .price-new { color: var(--promo-rouge); font-weight: 800; font-size: 1.2rem; }
+    .price-old { text-decoration: line-through; color: #aaa; font-size: 0.9rem; margin-right: 8px; }
+    .price-normal { color: var(--or-afro); font-weight: 800; font-size: 1.2rem; }
 
-    .btn-fav { 
-        position: absolute; top: 10px; right: 10px; background: white; 
-        width: 35px; height: 35px; border-radius: 50%; display: flex; 
-        align-items: center; justify-content: center; color: #ccc; 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; text-decoration: none; z-index: 5;
-    }
-    .btn-fav:hover, .btn-fav.active { color: var(--promo-rouge); }
-
-    .promo-flash { color: var(--promo-rouge); font-weight: 800; font-size: 0.9rem; text-transform: uppercase; margin-top: 10px; display: block; }
-    .promo-badge { background: var(--promo-rouge); color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 5px; font-weight: bold; margin-left: 5px; }
-
-    .price-old { text-decoration: line-through; color: #aaa; font-size: 0.85rem; }
-    .price-new { color: var(--promo-rouge); font-weight: 800; font-size: 1.1rem; }
-    .price-normal { color: var(--or-afro); font-weight: 700; font-size: 1.1rem; }
-
-    .btn-buy { background: var(--or-afro); color: white; border: none; font-weight: 600; transition: 0.3s; }
+    .btn-buy { background: var(--or-afro); color: white; border: none; font-weight: bold; }
     .btn-buy:hover { background: var(--or-fonce); color: white; }
+    
+    /* Pagination */
+    .page-link { border: none; color: #333; margin: 0 4px; border-radius: 8px !important; font-weight: bold; }
+    .page-item.active .page-link { background: var(--or-afro) !important; color: white !important; }
 </style>
 
-<div class="page-header text-center">
-    <div class="container">
-        <h1 class="display-5 fw-bold text-uppercase">Collection AfroStyle</h1>
-        <p class="lead">Le luxe et la tradition à portée de main</p>
-        
-        <div class="mx-auto mt-4" style="max-width: 500px;">
-            <form action="" method="GET" class="input-group">
-                <input type="text" name="q" class="form-control border-0 py-2 ps-4" style="border-radius: 30px 0 0 30px;" placeholder="Rechercher un modèle..." value="<?= htmlspecialchars($recherche) ?>">
-                <button class="btn btn-warning px-4 text-white" style="border-radius: 0 30px 30px 0;" type="submit"><i class="bi bi-search"></i></button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="container mb-5">
+<div class="container my-5">
     <div class="row g-4">
         <div class="col-lg-3">
-            <div class="sidebar-filter shadow-sm p-3 sticky-top" style="top: 20px;">
-                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-warning"> CATÉGORIES</h5>
-                <a href="catalogue.php" class="cat-link <?= $cat_id == 0 ? 'active' : '' ?>">Toute la collection</a>
-                <?php 
-                $categories = $pdo->query("SELECT * FROM categorie_produit")->fetchAll();
-                foreach($categories as $c): ?>
-                    <a href="?categorie=<?= $c['id_categorie'] ?>" class="cat-link <?= $cat_id == $c['id_categorie'] ? 'active' : '' ?>">
-                        <?= htmlspecialchars($c['nom_categorie']) ?>
-                    </a>
-                <?php endforeach; ?>
+            <div class="bg-white p-4 rounded-4 shadow-sm">
+                <h5 class="fw-bold mb-4 border-start border-4 border-warning ps-3">NOS CATÉGORIES</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="catalogue.php" class="text-decoration-none <?= $cat_id == 0 ? 'text-warning fw-bold' : 'text-dark' ?>">Tout voir</a></li>
+                    <?php 
+                    $cats = $pdo->query("SELECT * FROM categorie_produit")->fetchAll();
+                    foreach($cats as $c): ?>
+                        <li class="mb-2">
+                            <a href="?categorie=<?= $c['id_categorie'] ?>" class="text-decoration-none <?= $cat_id == $c['id_categorie'] ? 'text-warning fw-bold' : 'text-dark' ?>">
+                                <?= htmlspecialchars($c['nom_categorie']) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
         </div>
 
         <div class="col-lg-9">
-            <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-3 shadow-sm">
-                <span class="fw-bold text-muted"><?= count($produits) ?> modèles trouvés</span>
-                <div class="d-flex align-items-center gap-2">
-                    <label class="small fw-bold text-nowrap">Trier par :</label>
-                    <select class="form-select form-select-sm border-0 bg-light fw-bold" onchange="location.href='?categorie=<?= $cat_id ?>&q=<?= $recherche ?>&tri='+this.value">
-                        <option value="new" <?= $tri == 'new' ? 'selected' : '' ?>>Nouveautés</option>
-                        <option value="prix_asc" <?= $tri == 'prix_asc' ? 'selected' : '' ?>>Prix : Croissant</option>
-                        <option value="prix_desc" <?= $tri == 'prix_desc' ? 'selected' : '' ?>>Prix : Décroissant</option>
-                    </select>
-                </div>
+            <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
+                <h6 class="mb-0 fw-bold"><?= $totalProduits ?> Articles trouvés</h6>
+                <select class="form-select w-auto border-0 bg-light fw-bold" onchange="location.href='?categorie=<?= $cat_id ?>&q=<?= $recherche ?>&tri='+this.value">
+                    <option value="new" <?= $tri == 'new' ? 'selected' : '' ?>>Nouveautés</option>
+                    <option value="prix_asc" <?= $tri == 'prix_asc' ? 'selected' : '' ?>>Prix croissant</option>
+                    <option value="prix_desc" <?= $tri == 'prix_desc' ? 'selected' : '' ?>>Prix décroissant</option>
+                </select>
             </div>
 
             <div class="row g-4">
                 <?php foreach ($produits as $p): 
                     $reduc = $p['pourcentage_reduction'] ?? 0;
-                    $p_base = $p['prix_unitaire'];
-                    $p_final = $p_base * (1 - $reduc/100);
-                    $is_fav = isset($_SESSION['favoris'][$p['id_produit']]);
+                    $prix_final = $p['prix_unitaire'] * (1 - $reduc/100);
+                    $is_fav = (isset($_SESSION['favoris']) && in_array($p['id_produit'], $_SESSION['favoris']));
+
+                    // NETTOYAGE URL IMAGE (Git & Espaces)
+                    $img_path = trim($p['image_produit']);
+                    $img_url = str_replace(' ', '%20', $img_path);
                 ?>
-                <div class="col-6 col-md-4">
-                    <div class="product-card shadow-sm p-3 text-center">
-                        <div class="img-box rounded-3">
-                            <a href="favoris_action.php?id=<?= $p['id_produit'] ?>" class="btn-fav <?= $is_fav ? 'active' : '' ?>">
-                                <i class="bi <?= $is_fav ? 'bi-heart-fill' : 'bi-heart' ?>"></i>
-                            </a>
-                            <img src="<?= htmlspecialchars($p['image_produit']) ?>" alt="<?= htmlspecialchars($p['nom_produit']) ?>">
+                <div class="col-md-4 col-sm-6">
+                    <div class="product-card shadow-sm p-3">
+                        <?php if($reduc > 0): ?>
+                            <div class="promo-badge">-<?= (int)$reduc ?>%</div>
+                        <?php endif; ?>
+
+                        <a href="favoris_action.php?id=<?= $p['id_produit'] ?>" class="btn-fav <?= $is_fav ? 'active' : '' ?>">
+                            <i class="bi <?= $is_fav ? 'bi-heart-fill' : 'bi-heart' ?>"></i>
+                        </a>
+
+                        <div class="img-box rounded-4">
+                            <img src="<?= $img_url ?>" alt="<?= htmlspecialchars($p['nom_produit']) ?>" onerror="this.src='public/Images/placeholder.png'">
                         </div>
 
-                        <div class="promo-zone" style="min-height: 40px;">
-                            <?php if ($reduc > 0): ?>
-                                <span class="promo-flash">PROMO <span class="promo-badge">-<?= (int)$reduc ?>%</span></span>
-                            <?php endif; ?>
-                        </div>
+                        <div class="card-body text-center mt-3 px-0">
+                            <h6 class="fw-bold text-truncate"><?= htmlspecialchars($p['nom_produit']) ?></h6>
+                            
+                            <div class="mb-3">
+                                <?php if($reduc > 0): ?>
+                                    <span class="price-old"><?= number_format($p['prix_unitaire'], 0, '', ' ') ?> F</span>
+                                    <span class="price-new"><?= number_format($prix_final, 0, '', ' ') ?> FCFA</span>
+                                <?php else: ?>
+                                    <span class="price-normal"><?= number_format($p['prix_unitaire'], 0, '', ' ') ?> FCFA</span>
+                                <?php endif; ?>
+                            </div>
 
-                        <h6 class="fw-bold text-truncate mt-1"><?= htmlspecialchars($p['nom_produit']) ?></h6>
-
-                        <div class="mb-3">
-                            <?php if ($reduc > 0): ?>
-                                <span class="price-old"><?= number_format($p_base, 0, '', ' ') ?> F</span><br>
-                                <span class="price-new"><?= number_format($p_final, 0, '', ' ') ?> FCFA</span>
-                            <?php else: ?>
-                                <span class="price-normal"><?= number_format($p_base, 0, '', ' ') ?> FCFA</span>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="panier.php?action=add&id=<?= $p['id_produit'] ?>" class="btn btn-buy btn-sm py-2 rounded-3">
-                                <i class="bi bi-cart-plus me-1"></i> PANIER
-                            </a>
-                            <a href="produit_detail.php?id=<?= $p['id_produit'] ?>" class="btn btn-outline-dark btn-sm py-2 rounded-3">DÉTAILS</a>
+                            <div class="d-grid gap-2">
+                                <a href="panier.php?action=add&id=<?= $p['id_produit'] ?>" class="btn btn-buy rounded-pill">
+                                    <i class="bi bi-cart-plus me-1"></i> PANIER
+                                </a>
+                                <a href="produit_detail.php?id=<?= $p['id_produit'] ?>" class="btn btn-outline-dark btn-sm border-0 fw-bold">VOIR DÉTAILS</a>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <?php endforeach; ?>
             </div>
 
-            <?php if(empty($produits)): ?>
-                <div class="text-center py-5 bg-white rounded-4 shadow-sm">
-                    <i class="bi bi-search fs-1 text-muted"></i>
-                    <p class="mt-3 text-muted">Aucun modèle ne correspond à votre recherche.</p>
-                </div>
+            <?php if ($totalPages > 1): ?>
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?= ($i == $pageCourante) ? 'active' : '' ?>">
+                            <a class="page-link shadow-sm" href="?page=<?= $i ?>&categorie=<?= $cat_id ?>&tri=<?= $tri ?>">
+                                <?= $i ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+            </nav>
             <?php endif; ?>
         </div>
     </div>
