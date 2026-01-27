@@ -6,7 +6,7 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `afrostyle_shop` 
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `afrostyle_shop`;
-
+ 
 -- 1. UTILISATEURS
 CREATE TABLE IF NOT EXISTS `utilisateurs` (
   `id_utilisateur` INT NOT NULL AUTO_INCREMENT,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `categorie_produit` (
   PRIMARY KEY (`id_categorie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE INDEX idx_nom_categorie ON categorie_produit(nom_categorie);
+
 
 -- 3. FOURNISSEURS
 CREATE TABLE IF NOT EXISTS `fournisseurs` (
@@ -49,9 +49,11 @@ CREATE TABLE IF NOT EXISTS `produit` (
   `id_produit` INT NOT NULL AUTO_INCREMENT,
   `nom_produit` VARCHAR(100) NOT NULL,
   `prix_unitaire` DECIMAL(10,2) NOT NULL,
+  `prix_promo` DECIMAL(10,2) DEFAULT NULL,
   `quantite_stock` INT DEFAULT '0',
   `image_produit` VARCHAR(250) DEFAULT NULL, -- image principale
   `description_produit` TEXT,
+  `origine_modele` VARCHAR(50) DEFAULT 'AfroStyle',
   `id_categorie` INT,
   `id_fournisseur` INT,
   PRIMARY KEY (`id_produit`),
@@ -59,7 +61,6 @@ CREATE TABLE IF NOT EXISTS `produit` (
   CONSTRAINT `fk_prod_fourn` FOREIGN KEY (`id_fournisseur`) REFERENCES `fournisseurs`(`id_fournisseur`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE INDEX idx_nom_produit ON produit(nom_produit);
 
 -- 5. COMMANDE
 CREATE TABLE IF NOT EXISTS `commande` (
@@ -157,11 +158,4 @@ CREATE TABLE IF NOT EXISTS `images_produit` (
 
 COMMIT;
 
-INSERT INTO produit (nom_produit, prix_unitaire, quantite_stock, image_produit, description_produit, id_categorie, id_fournisseur)
-VALUES
-('Gaouni', 35000, 10, 'public/Images/gaouni.PNG', 'Magnifique Gaouni traditionnel', 1, 1),
-('Kandzou', 25000, 15, 'public/Images/kandzou.PNG', 'Élégant Kandzou africain', 1, 1),
-('Kofia', 12000, 20, 'public/Images/kofia.PNG', 'Kofia traditionnelle', 1, 1),
-('Salouva', 30000, 12, 'public/Images/salouva.PNG', 'Salouva colorée', 1, 1),
-('Shiromani', 40000, 8, 'public/Images/Shiromani.PNG', 'Shiromani de luxe', 1, 1);
 

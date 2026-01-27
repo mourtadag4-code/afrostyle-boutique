@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="icon-circle me-3"><i class="bi bi-geo-alt"></i></div>
                     <div>
                         <h6 class="fw-bold mb-0">Adresse</h6>
-                        <p class="mb-0">123 Rue du Marché, Dakar, Sénégal</p>
+                        <p class="mb-0">Dakar, Sénégal</p>
                     </div>
                 </div>
 
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="icon-circle me-3"><i class="bi bi-telephone"></i></div>
                     <div>
                         <h6 class="fw-bold mb-0">Téléphone</h6>
-                        <p class="mb-0">+221 33 000 00 00</p>
+                        <p class="mb-0">+221 33 12 34 56</p>
                     </div>
                 </div>
 

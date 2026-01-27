@@ -19,7 +19,7 @@
             <div class="col-md-3 mb-4">
                 <h5 class="text-warning">Contact</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="bi bi-telephone text-warning me-2"></i> +221 78 106 03 85</li>
+                    <li class="mb-2"><i class="bi bi-telephone text-warning me-2"></i> +221 33 12 34 56</li>
                     <li class="mb-2"><i class="bi bi-envelope text-warning me-2"></i> contact@afrostyle.com</li>
                     <li><i class="bi bi-geo-alt text-warning me-2"></i> Dakar, Sénégal</li>
                 </ul>
