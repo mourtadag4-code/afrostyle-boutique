@@ -2,7 +2,6 @@
 require_once 'auth_check.php';
 require_once '../commun/connexiondb.php';
 
-// On vérifie si on a bien un ID de commande dans l'URL
 if(!isset($_GET['id']) || empty($_GET['id'])) {
     header('Location: commandes.php');
     exit();
@@ -10,7 +9,7 @@ if(!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id_commande = (int)$_GET['id'];
 
-// 1. On récupère les infos de la commande et du client
+// 1. Récupération des infos commande et client
 $stmt = $pdo->prepare("SELECT c.*, u.nom, u.prenom, u.email, u.telephone, u.adresse 
                        FROM commande c 
                        JOIN utilisateurs u ON c.id_utilisateur = u.id_utilisateur 
@@ -22,71 +21,74 @@ if (!$commande) {
     die("Commande introuvable.");
 }
 
-// 2. On récupère les articles
+// 2. Récupération des articles
 $stmt = $pdo->prepare("SELECT d.*, p.nom_produit, p.image_produit 
                        FROM details_commande d 
                        JOIN produit p ON d.id_produit = p.id_produit 
                        WHERE d.id_commande = ?");
 $stmt->execute([$id_commande]);
 $articles = $stmt->fetchAll();
+
+include 'header_admin.php'; 
 ?>
 
-<!DOCTYPE html>
-<html lang="fr" id="html-tag"> <head>
-    <meta charset="UTF-8">
-    <title>Détails Commande #<?= $id_commande ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../public/css/styleadmin.css">
-    <style>
-        /* Style spécifique pour l'impression : on force le mode clair */
-        @media print {
-            #theme-toggle, .btn-outline-dark { display: none !important; }
-            body { background: white !important; color: black !important; }
-            .card { border: 1px solid #ccc !important; box-shadow: none !important; }
-        }
-    </style>
-</head>
-<body>
+<style>
+    /* Style pour l'impression factures */
+    @media print {
+        .sidebar, #theme-toggle, .btn-print-hide, .dropdown { display: none !important; }
+        .main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+        body { background: white !important; color: black !important; }
+        .card { border: 1px solid #eee !important; box-shadow: none !important; }
+        .container { max-width: 100% !important; width: 100% !important; }
+    }
+</style>
 
-<div class="container py-5">
-    <div class="mb-4 d-flex justify-content-between align-items-center">
+<div class="container-fluid">
+    <div class="mb-4 d-flex justify-content-between align-items-center btn-print-hide">
         <div>
             <a href="commandes.php" class="btn btn-outline-dark rounded-pill shadow-sm me-2">
-                <i class="bi bi-arrow-left"></i> Retour
+                <i class="bi bi-arrow-left"></i> Retour aux commandes
             </a>
-            <button id="theme-toggle" class="btn btn-outline-dark rounded-circle shadow-sm">
-                <i class="bi bi-moon-stars-fill" id="theme-icon"></i>
-            </button>
         </div>
         <button onclick="window.print()" class="btn btn-primary rounded-pill px-4 shadow">
-            <i class="bi bi-printer me-2"></i> Imprimer Facture
+            <i class="bi bi-printer me-2"></i> Imprimer la Facture
         </button>
     </div>
 
     <div class="row g-4">
         <div class="col-md-4">
-            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
                 <div class="card-header bg-dark text-white p-3">
-                    <h6 class="mb-0">Informations Client</h6>
+                    <h6 class="mb-0"><i class="bi bi-person-circle me-2"></i>Informations Client</h6>
                 </div>
-                <div class="card-body bg-card-custom">
-                    <h5 class="fw-bold text-dark-emphasis"><?= htmlspecialchars($commande['nom'] . ' ' . $commande['prenom']) ?></h5>
-                    <p class="text-muted small mb-3">ID Client: #<?= $commande['id_utilisateur'] ?></p>
+                <div class="card-body">
+                    <h5 class="fw-bold"><?= htmlspecialchars($commande['nom'] . ' ' . $commande['prenom']) ?></h5>
+                    <p class="text-muted small mb-3">Client #<?= $commande['id_utilisateur'] ?></p>
+                    <hr>
                     <p class="mb-1"><strong>Email:</strong> <?= $commande['email'] ?></p>
                     <p class="mb-3"><strong>Tél:</strong> <?= $commande['telephone'] ?></p>
-                    <div class="p-3 bg-light text-dark rounded-3 border">
-                        <small class="text-muted d-block">Adresse de livraison :</small>
-                        <strong><?= nl2br(htmlspecialchars($commande['adresse'])) ?></strong>
+                    <div class="p-3 bg-light rounded-3 border">
+                        <small class="text-muted d-block mb-1">Adresse de livraison :</small>
+                        <span class="fw-semibold"><?= nl2br(htmlspecialchars($commande['adresse'])) ?></span>
                     </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-secondary text-white p-3">
+                    <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>État de la commande</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">Date : <strong><?= date('d/m/Y H:i', strtotime($commande['date_commande'])) ?></strong></p>
+                    <p class="mb-0">ID Commande : <strong>#<?= $id_commande ?></strong></p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-8">
-            <div class="card shadow-sm border-0 rounded-4 overflow-hidden admin-table-card">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
                 <div class="card-header bg-white p-3 border-bottom">
-                    <h6 class="mb-0 fw-bold text-dark">Articles commandés</h6>
+                    <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-cart3 me-2"></i>Détails des articles</h6>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -104,21 +106,21 @@ $articles = $stmt->fetchAll();
                                 <tr>
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center">
-                                            <img src="../<?= $art['image_produit'] ?>" width="45" height="45" class="rounded me-3 shadow-sm" style="object-fit:cover; border: 1px solid var(--border-color);">
-                                            <span class="fw-bold text-dark-emphasis"><?= htmlspecialchars($art['nom_produit']) ?></span>
+                                            <img src="../<?= $art['image_produit'] ?>" width="50" height="50" class="rounded me-3 shadow-sm border" style="object-fit:cover;">
+                                            <span class="fw-bold"><?= htmlspecialchars($art['nom_produit']) ?></span>
                                         </div>
                                     </td>
                                     <td><?= number_format($art['prix_unitaire'], 0, '', ' ') ?> FCFA</td>
                                     <td>x<?= $art['Quantite_commande'] ?></td>
-                                    <td class="text-end pe-4 fw-bold text-dark-emphasis">
+                                    <td class="text-end pe-4 fw-bold">
                                         <?= number_format($art['prix_unitaire'] * $art['Quantite_commande'], 0, '', ' ') ?> FCFA
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
-                            <tfoot class="table-light">
+                            <tfoot class="table-light border-top border-2">
                                 <tr>
-                                    <td colspan="3" class="text-end py-3 fw-bold">TOTAL À PAYER :</td>
+                                    <td colspan="3" class="text-end py-3 fw-bold">TOTAL GÉNÉRAL :</td>
                                     <td class="text-end pe-4 py-3 fw-bold text-primary fs-5">
                                         <?= number_format($commande['montant_total'], 0, '', ' ') ?> FCFA
                                     </td>
@@ -128,10 +130,12 @@ $articles = $stmt->fetchAll();
                     </div>
                 </div>
             </div>
+            
+            <div class="mt-4 p-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-4 btn-print-hide">
+                <small class="text-dark"><i class="bi bi-exclamation-triangle-fill me-2"></i>Note : En cas de modification, veuillez mettre à jour le stock manuellement dans la gestion des produits.</small>
+            </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../public/js/script.js"></script> </body>
-</html>
+<?php include 'footer_admin.php'; ?>

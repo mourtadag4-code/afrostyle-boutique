@@ -53,7 +53,7 @@ $userName = $_SESSION['utilisateur_nom'] ?? 'Mon compte';
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container">
         <a class="navbar-brand fw-bold fs-3" href="index.php">
-            <span style="color: var(--afro-gold);">AFRO</span>STYLE
+            <span style="color: var(--afro-gold);">AFRO</span>STYLE SHOP
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">

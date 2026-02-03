@@ -1,5 +1,5 @@
 -- =============================================
--- CRÉATION DES TABLES AFROSTYLE SHOP - Version InnoDB
+-- CRÉATION DES TABLES AFROSTYLE SHOP -
 -- =============================================
 
 -- 1. Création de la base de données

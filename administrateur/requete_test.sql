@@ -22,13 +22,13 @@ INSERT INTO `fournisseurs` (`id_fournisseur`, `nom`, `prenom`, `telephone`, `adr
 
 -- 3. UTILISATEURS
 INSERT INTO `utilisateurs` (`id_utilisateur`, `nom`, `prenom`, `adresse`, `email`, `telephone`, `sexe`, `mot_de_passe`, `role`, `date_inscription`, `reset_token`, `reset_expires_at`) VALUES
-(1, 'Nisrine', 'Attoumane', 'Fann hock_Dakar', 'nisrine.attoumane@afrostyle.com', '+221781060385', 'F', '$2y$10$GmEe54Fi.aNHx3xQACes6OTTPXpTkYJ/f5.FLGe1wMoewBg/Y.jzG', 'administrateur', '2026-01-10 14:31:24', 'a4fbc96991ec1cf411489edc6d2438e52d8138022cce94f44cfa5ce7eb1223cb', '2026-01-25 12:02:31'),
-(2, 'Soukaina', 'Attoumane', 'Fann hock_Dakar', 'attoumanesoukaina@gmail.com', '+221773974893', 'F', '$2y$10$yoJUD8MJ8iIZEBWcL1LE2.Z31gVnlQy0FjzeMzbNfeLarm4kzHEZS', 'client', '2026-01-13 19:08:52', NULL, NULL),
-(3, 'SOUNIS', 'Soumaila', 'Fann hock_Dakar', 'sounis@gmail.com', '+221765864559', 'F', '$2y$10$Z3Yp4HSAzV6k0rCufsX85espbMJX5Xwa3hLUIOxHdQAPzPeArWiN2', 'client', '2026-01-13 20:00:23', NULL, NULL),
-(4, 'Nesse', 'Attoumane', 'Fann hock_Dakar', 'attoumanenisrine10@gmail.com', '+221781060385', 'F', '$2y$10$rm.m.nF2uzU3.MUtC53Zo.DlrEAn/d0dUfVe.x.jz36LYxmGFUmSu', 'client', '2026-01-21 12:30:25', 'fd15b28e63bcd8626c29c0eab8b32313d75f8372c7529ec47f6af3ff356149a4', '2026-01-21 13:33:12'),
-(5, 'Nisrine', 'Attoumane', 'Fann hock_Dakar', 'attoumanenisrine1@gmail.com', '+221781060385', 'F', '$2y$10$RUPpQwwOWKZ7Cc5ijfjImuyADPOtuqlr2xOlbgDgkFAERuFgKLMxm', 'client', '2026-01-25 11:02:56', NULL, NULL),
-(6, 'Djaouhariat', 'Saindou', 'Anjouan, Comores', 'djaousaindou@gmail.com', '+221 331 60 16', 'F', '$2y$10$ULPOaZaXkD6BTiwDWV1o5udadmV93eHMp9Dy/LrBigdVTF6kRUR8W', 'client', '2026-01-25 11:33:14', NULL, NULL),
-(7, 'Isma', 'Attou', 'Comores', 'ismaattou@gmail.com', '781060385', 'M', '$2y$10$nc0XslezG/7LYdtQOsFva.0Jc6EkOGMZol2vB4/.L0FHKtwH.F/d6', 'client', '2026-01-25 11:43:34', NULL, NULL);
+(1, 'NISRINE', 'Attoumane', 'Fann hock_Dakar', 'attoumanenisrine1@gmail.com', '+221781060385', 'F', '$2y$10$RUPpQwwOWKZ7Cc5ijfjImuyADPOtuqlr2xOlbgDgkFAERuFgKLMxm', 'client', '2026-01-25 11:02:56', NULL, NULL),
+(2, 'ADMIN', 'Afrostyle', 'Plateau_Dakar', 'contact@afrostyle.com', '+22133123456', 'F', '$2y$10$GmEe54Fi.aNHx3xQACes6OTTPXpTkYJ/f5.FLGe1wMoewBg/Y.jzG', 'administrateur', '2026-01-10 14:31:24', 'a4fbc96991ec1cf411489edc6d2438e52d8138022cce94f44cfa5ce7eb1223cb', '2026-01-25 12:02:31'),
+(3, 'SOUNIS', 'Soumaila', 'MEDINA_Dakar', 'sounis@gmail.com', '+221761954295', 'F', '$2y$10$Z3Yp4HSAzV6k0rCufsX85espbMJX5Xwa3hLUIOxHdQAPzPeArWiN2', 'client', '2026-01-13 20:00:23', NULL, NULL),
+(4, 'GUEYE', 'Mourtadha', 'Mermoz_Dakar', 'mourtag4@gmail.com', '+22177564320', 'M', '$2y$10$rm.m.nF2uzU3.MUtC53Zo.DlrEAn/d0dUfVe.x.jz36LYxmGFUmSu', 'client', '2026-01-21 12:30:25', 'fd15b28e63bcd8626c29c0eab8b32313d75f8372c7529ec47f6af3ff356149a4', '2026-01-21 13:33:12'),
+(5, 'BA', 'Malal', 'Ouakam_Dakar', 'bamalal@gmail.com', '+221773974893', 'M', '$2y$10$yoJUD8MJ8iIZEBWcL1LE2.Z31gVnlQy0FjzeMzbNfeLarm4kzHEZS', 'client', '2026-01-13 19:08:52', NULL, NULL),
+(6, 'SARR', 'Ndeye Touti', 'Rufisque', 'ndeyetouti@gmail.com', '+221 76892390', 'F', '$2y$10$ULPOaZaXkD6BTiwDWV1o5udadmV93eHMp9Dy/LrBigdVTF6kRUR8W', 'client', '2026-01-25 11:33:14', NULL, NULL),
+(7, 'isma', 'Attou', 'Ouakam', 'ismaattou@gmail.com', '+22176459023', 'M', '$2y$10$nc0XslezG/7LYdtQOsFva.0Jc6EkOGMZol2vB4/.L0FHKtwH.F/d6', 'client', '2026-01-25 11:43:34', NULL, NULL);
 
 -- 4. PRODUITS
 INSERT INTO `produit` (`id_produit`, `nom_produit`, `prix_unitaire`, `quantite_stock`, `image_produit`, `description_produit`, `origine_modele`, `id_categorie`, `id_fournisseur`, `prix_promo`) VALUES
